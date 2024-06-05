@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+
+    <title>Signup - Dashboard Activ-Merit</title>
+    <meta content="" name="description" />
+    <meta content="" name="keywords" />
+
+    <!-- Favicons -->
+    <link href="src/img/favicon.png" rel="icon" />
+    <link href="src/img/apple-touch-icon.png" rel="apple-touch-icon" />
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+      rel="stylesheet"
+    />
+
+    <!-- Vendor CSS Files -->
+    <link href="src/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link
+      href="src/vendor/bootstrap-icons/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link href="src/vendor/boxicons/css/boxicons.min.css" rel="stylesheet" />
+    <link href="src/vendor/quill/quill.snow.css" rel="stylesheet" />
+    <link href="src/vendor/quill/quill.bubble.css" rel="stylesheet" />
+    <link href="src/vendor/remixicon/remixicon.css" rel="stylesheet" />
+    <link href="src/vendor/simple-datatables/style.css" rel="stylesheet" />
+
+    <!-- Template Main CSS File -->
+    <link href="src/css/style.css" rel="stylesheet" />
+    <script type="module" src="/src/js/firebaseauth.js"></script>
+  </head>
+  <body>
+    <div class="signup">
+      <h1>Signup</h1>
+      <form id="signup-form">
+        <label for="name">
+          <i class="bi bi-person-fill"></i>
+        </label>
+        <input type="text" name="name" placeholder="Name" required />
+        <label for="email">
+          <i class="bi bi-envelope-fill"></i>
+        </label>
+        <input type="email" name="email" placeholder="Email" required />
+        <label for="phone">
+          <i class="bi bi-telephone-fill"></i>
+        </label>
+        <input type="text" name="phone" placeholder="Phone" required />
+        <label for="admincollege">
+          <i class="bi bi-building"></i>
+        </label>
+        <input
+          type="text"
+          name="admincollege"
+          placeholder="Admin College"
+          required
+        />
+        <label for="username">
+          <i class="bi bi-person"></i>
+        </label>
+        <input type="text" name="username" placeholder="Username" required />
+        <label for="password">
+          <i class="bi bi-shield-lock-fill"></i>
+        </label>
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          required
+        />
+        <input type="submit" value="Signup" />
+      </form>
+    </div>
+    <script src="src/js/main.js"></script>
+
+    <!-- Vendor JS Files -->
+    <script src="src/vendor/apexcharts/apexcharts.min.js"></script>
+    <script src="src/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="src/vendor/chart.js/chart.min.js"></script>
+    <script src="src/vendor/echarts/echarts.min.js"></script>
+    <script src="src/vendor/quill/quill.min.js"></script>
+    <script src="src/vendor/simple-datatables/simple-datatables.js"></script>
+    <script src="src/vendor/tinymce/tinymce.min.js"></script>
+    <script src="src/vendor/php-email-form/validate.js"></script>
+  </body>
+</html>
