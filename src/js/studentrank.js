@@ -1,4 +1,3 @@
-// studentrank.js
 import { db, getDocs, collection, doc, getDoc } from "./firebaseauth.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -8,7 +7,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   try {
     const usersSnapshot = await getDocs(collection(db, "users"));
-
     const activityLogSnapshot = await getDocs(collection(db, "activitylog"));
 
     const activityLogs = activityLogSnapshot.docs.map((doc) => ({
@@ -24,7 +22,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const matricNumber = userDoc.id;
       let totalMerit = 0;
 
-      for (const activityLog of activityLogs) {
+      const scannedUserPromises = activityLogs.map(async (activityLog) => {
         const activityData = activityLog.data;
         const activityId = activityLog.id;
 
@@ -32,18 +30,24 @@ document.addEventListener("DOMContentLoaded", async () => {
           collection(db, `activitylog/${activityId}/scannedUser`)
         );
 
-        for (const scannedUserDoc of scannedUserSnapshot.docs) {
-          if (scannedUserDoc.id === matricNumber && activityData.eventId) {
-            const eventDocRef = activityData.eventId; // This is a DocumentReference
-            const eventDoc = await getDoc(eventDocRef);
+        const eventPromises = scannedUserSnapshot.docs.map(
+          async (scannedUserDoc) => {
+            if (scannedUserDoc.id === matricNumber && activityData.eventId) {
+              const eventDocRef = activityData.eventId; // This is a DocumentReference
+              const eventDoc = await getDoc(eventDocRef);
 
-            if (eventDoc.exists()) {
-              const eventData = eventDoc.data();
-              totalMerit += parseInt(eventData.merit, 10) || 0; // Ensure merit is treated as an integer
+              if (eventDoc.exists()) {
+                const eventData = eventDoc.data();
+                totalMerit += parseInt(eventData.merit, 10) || 0; // Ensure merit is treated as an integer
+              }
             }
           }
-        }
-      }
+        );
+
+        await Promise.all(eventPromises);
+      });
+
+      await Promise.all(scannedUserPromises);
 
       return {
         name: userData.name || "N/A",
