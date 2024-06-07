@@ -23,81 +23,64 @@ document.addEventListener("DOMContentLoaded", async () => {
   let student2Chart = null;
 
   try {
-    const usersSnapshot = await getDocs(collection(db, "users"));
-    let index = 1;
+    // Fetch user data and activity logs in parallel
+    const [usersSnapshot, activityLogSnapshot] = await Promise.all([
+      getDocs(collection(db, "users")),
+      getDocs(collection(db, "activitylog")),
+    ]);
 
-    for (const userDoc of usersSnapshot.docs) {
+    // Process user data
+    usersSnapshot.docs.forEach((userDoc) => {
       const userData = userDoc.data();
       const matricNumber = userDoc.id;
-      let totalMerit = 0;
+      studentDataCache[matricNumber] = {
+        ...userData,
+        matricNumber,
+        totalMerit: 0,
+      };
 
-      try {
-        if (studentDataCache[matricNumber]) {
-          totalMerit = studentDataCache[matricNumber].totalMerit;
-        } else {
-          const activityLogSnapshot = await getDocs(
-            collection(db, "activitylog")
-          );
-
-          for (const activityDoc of activityLogSnapshot.docs) {
-            const activityData = activityDoc.data();
-            const activityId = activityDoc.id;
-
-            const scannedUserDocRef = doc(
-              db,
-              `activitylog/${activityId}/scannedUser`,
-              matricNumber
-            );
-            const scannedUserDoc = await getDoc(scannedUserDocRef);
-
-            if (scannedUserDoc.exists() && activityData.eventId) {
-              const eventDocRef = activityData.eventId;
-              const eventDoc = await getDoc(eventDocRef);
-
-              if (eventDoc.exists()) {
-                const eventData = eventDoc.data();
-                totalMerit += parseInt(eventData.merit, 10) || 0;
-              }
-            }
-          }
-
-          studentDataCache[matricNumber] = {
-            totalMerit,
-          };
-        }
-      } catch (error) {
-        console.error(
-          `Error fetching activity logs for user ${matricNumber}:`,
-          error
-        );
-      }
-
-      const student = {
-        index,
+      students.push({
         name: userData.name || "N/A",
         college: userData.college || "N/A",
         gender: userData.gender || "N/A",
         matricNumber,
-        totalMerit,
-      };
-      students.push(student);
+      });
+    });
 
+    // Process activity logs
+    await loadMeritData(activityLogSnapshot, studentDataCache);
+
+    // Sort students by name
+    students.sort((a, b) => a.name.localeCompare(b.name));
+
+    // Add index based on the sorted names
+    students = students.map((student, index) => ({
+      ...student,
+      index: index + 1,
+    }));
+
+    // Render student table
+    students.forEach((student) => {
       const row = document.createElement("tr");
       row.innerHTML = `
-        <th scope="row">${index++}</th>
+        <th scope="row">${student.index}</th>
         <td>${student.name}</td>
         <td>${student.college}</td>
         <td>${student.gender}</td>
         <td>${student.matricNumber}</td>
-        <td>${student.totalMerit}</td>
+        <td>${studentDataCache[student.matricNumber].totalMerit}</td>
         <td><button class="btn btn-primary btn-sm details-btn" data-matric="${
           student.matricNumber
         }">Details</button></td>
       `;
       studentTableBody.appendChild(row);
-    }
+    });
 
-    new simpleDatatables.DataTable(".datatable");
+    const dataTable = new simpleDatatables.DataTable(".datatable", {
+      columns: [
+        { select: 6, sortable: false }, // Disable sorting on 'Action' column
+      ],
+    });
 
     const searchStudent = async (
       input,
@@ -114,11 +97,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         );
 
         if (matchedStudent) {
-          const userDoc = await getDoc(
-            doc(db, "users", matchedStudent.matricNumber)
-          );
-          const userData = userDoc.data();
-
+          const userData = studentDataCache[matchedStudent.matricNumber];
           detailsContainer.innerHTML = `
             <div class="card" style="flex: 1;">
               <div class="card-body">
@@ -135,7 +114,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               <div class="card-body">
                 <h5 class="card-title">Merit</h5>
                 <p style="font-size: 2rem; color: green; text-align: center;">${
-                  matchedStudent.totalMerit
+                  studentDataCache[matchedStudent.matricNumber].totalMerit
                 }</p>
               </div>
             </div>
@@ -190,8 +169,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         );
 
         if (matchedStudent) {
-          const userDoc = await getDoc(doc(db, "users", matricNumber));
-          const userData = userDoc.data();
+          const userData = studentDataCache[matchedStudent.matricNumber];
 
           const studentName = document.getElementById("studentName");
           const studentCollege = document.getElementById("studentCollege");
@@ -218,7 +196,8 @@ document.addEventListener("DOMContentLoaded", async () => {
           if (studentMatric)
             studentMatric.textContent = `Matric: ${matchedStudent.matricNumber}`;
           if (studentMerit)
-            studentMerit.textContent = matchedStudent.totalMerit;
+            studentMerit.textContent =
+              studentDataCache[matchedStudent.matricNumber].totalMerit;
 
           student1Chart = await renderMeritChart(
             matchedStudent.matricNumber,
@@ -247,6 +226,43 @@ document.addEventListener("DOMContentLoaded", async () => {
     studentTableBody.appendChild(row);
   }
 });
+
+async function loadMeritData(activityLogSnapshot, studentDataCache) {
+  try {
+    const promises = [];
+
+    for (const activityDoc of activityLogSnapshot.docs) {
+      const activityData = activityDoc.data();
+      const activityId = activityDoc.id;
+
+      for (const matricNumber in studentDataCache) {
+        const scannedUserDocRef = doc(
+          db,
+          `activitylog/${activityId}/scannedUser`,
+          matricNumber
+        );
+        promises.push(
+          getDoc(scannedUserDocRef).then((scannedUserDoc) => {
+            if (scannedUserDoc.exists() && activityData.eventId) {
+              const eventDocRef = activityData.eventId;
+              return getDoc(eventDocRef).then((eventDoc) => {
+                if (eventDoc.exists()) {
+                  const eventData = eventDoc.data();
+                  studentDataCache[matricNumber].totalMerit +=
+                    parseInt(eventData.merit, 10) || 0;
+                }
+              });
+            }
+          })
+        );
+      }
+    }
+
+    await Promise.all(promises);
+  } catch (error) {
+    console.error("Error loading merit data:", error);
+  }
+}
 
 async function renderMeritChart(matricNumber, chartContainerId, chartInstance) {
   let meritData = {};
