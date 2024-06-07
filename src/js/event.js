@@ -68,6 +68,8 @@ document.addEventListener("DOMContentLoaded", async () => {
               date: eventData.date || "N/A",
               placeName: eventData.placeName || "N/A",
               merit: eventData.merit || "N/A",
+              startTime: eventData.startTime || "",
+              endTime: eventData.endTime || "",
               eventId,
               scannedUsers,
             });
@@ -142,11 +144,35 @@ window.showEventDetails = async (eventId, scannedUsers) => {
     if (eventDoc.exists()) {
       const eventData = eventDoc.data();
 
+      console.log("Event Data Fetched for Modal:", eventData);
+
       document.getElementById("eventName").value = eventData.eventName;
       document.getElementById("eventPlace").value = eventData.placeName;
       document.getElementById("eventDate").value = eventData.date;
+      document.getElementById("startTime").value = eventData.startTime || "";
+      document.getElementById("endTime").value = eventData.endTime || "";
       document.getElementById("meritScore").value = eventData.merit;
       document.getElementById("scannedUsers").value = scannedUsers;
+
+      // Add event listeners to turn the text fields into time pickers on focus
+      const startTimeInput = document.getElementById("startTime");
+      const endTimeInput = document.getElementById("endTime");
+
+      startTimeInput.addEventListener("focus", function () {
+        this.type = "time";
+      });
+
+      endTimeInput.addEventListener("focus", function () {
+        this.type = "time";
+      });
+
+      startTimeInput.addEventListener("blur", function () {
+        if (!this.value) this.type = "text";
+      });
+
+      endTimeInput.addEventListener("blur", function () {
+        if (!this.value) this.type = "text";
+      });
 
       eventForm.onsubmit = async (e) => {
         e.preventDefault();
@@ -155,6 +181,8 @@ window.showEventDetails = async (eventId, scannedUsers) => {
           eventName: document.getElementById("eventName").value,
           placeName: document.getElementById("eventPlace").value,
           date: document.getElementById("eventDate").value,
+          startTime: document.getElementById("startTime").value,
+          endTime: document.getElementById("endTime").value,
           merit: document.getElementById("meritScore").value,
         };
 
