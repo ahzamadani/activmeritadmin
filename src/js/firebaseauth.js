@@ -12,7 +12,7 @@ import {
   getDoc,
   setDoc,
   updateDoc,
-  deleteDoc, // Add deleteDoc here
+  deleteDoc,
   getDocs,
   query,
   where,
@@ -50,7 +50,7 @@ export {
   getDoc,
   setDoc,
   updateDoc,
-  deleteDoc, // Add deleteDoc here
+  deleteDoc,
   query,
   where,
   orderBy,
