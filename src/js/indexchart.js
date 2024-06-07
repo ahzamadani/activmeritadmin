@@ -108,7 +108,7 @@ async function renderChart() {
         format: "MMM 'yy",
         show: true,
       },
-      tickAmount: 13, // Ensures all months are shown including December
+      tickAmount: 15, // Ensures all months are shown including December
     },
     yaxis: {
       min: 0,
