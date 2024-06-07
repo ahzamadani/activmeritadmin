@@ -1,4 +1,3 @@
-// firebaseauth.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
 import {
   getAuth,
@@ -13,6 +12,7 @@ import {
   getDoc,
   setDoc,
   updateDoc,
+  deleteDoc, // Add deleteDoc here
   getDocs,
   query,
   where,
@@ -50,6 +50,7 @@ export {
   getDoc,
   setDoc,
   updateDoc,
+  deleteDoc, // Add deleteDoc here
   query,
   where,
   orderBy,
