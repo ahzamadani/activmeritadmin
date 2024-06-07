@@ -59,8 +59,7 @@
               <span
                 class="d-none d-md-block dropdown-toggle ps-2"
                 id="profile-name"
-                >Ahza Madani</span
-              >
+              ></span>
             </a>
             <!-- End Profile Image Icon -->
 
@@ -68,7 +67,7 @@
               class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile"
             >
               <li class="dropdown-header">
-                <h6 id="dropdown-admin-name">Ahza Madani</h6>
+                <h6 id="dropdown-admin-name"></h6>
                 <span>Admin</span>
               </li>
               <li><hr class="dropdown-divider" /></li>
@@ -188,8 +187,7 @@
       aria-labelledby="compareModalLabel"
       aria-hidden="true"
     >
-      <div class="modal-dialog modal-md">
-        <!-- Change modal-lg to modal-md to make it smaller -->
+      <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="compareModalLabel">Compare Students</h5>
@@ -209,7 +207,11 @@
                   class="form-control mb-3"
                   placeholder="Search student 1"
                 />
+                <button id="clear-search1" class="btn btn-secondary mb-3">
+                  Clear
+                </button>
                 <div id="student1-details"></div>
+                <div id="student1MeritChart"></div>
               </div>
               <div>
                 <input
@@ -218,7 +220,11 @@
                   class="form-control mb-3"
                   placeholder="Search student 2"
                 />
+                <button id="clear-search2" class="btn btn-secondary mb-3">
+                  Clear
+                </button>
                 <div id="student2-details"></div>
+                <div id="student2MeritChart"></div>
               </div>
             </div>
           </div>
@@ -258,7 +264,30 @@
             ></button>
           </div>
           <div class="modal-body">
-            <div id="student-details"></div>
+            <div class="row">
+              <div class="col-md-6">
+                <div id="student-details" class="card">
+                  <div class="card-body">
+                    <h5 class="card-title" id="studentName"></h5>
+                    <p id="studentCollege"></p>
+                    <p id="studentGender"></p>
+                    <p id="studentAge"></p>
+                    <p id="studentEmail"></p>
+                    <p id="studentPhone"></p>
+                    <p id="studentMatric"></p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div id="student-merit" class="card text-center">
+                  <div class="card-body">
+                    <h5 class="card-title">Merit</h5>
+                    <h1 id="studentMerit" class="text-success display-3"></h1>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="studentMeritChart" class="mt-4"></div>
           </div>
           <div class="modal-footer">
             <button
@@ -294,6 +323,7 @@
     <script src="src/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="src/vendor/chart.js/chart.min.js"></script>
     <script src="src/vendor/echarts/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="src/vendor/quill/quill.min.js"></script>
     <script src="src/vendor/simple-datatables/simple-datatables.js"></script>
     <script src="src/vendor/tinymce/tinymce.min.js"></script>
@@ -302,5 +332,6 @@
     <script src="src/js/main.js"></script>
     <script type="module" src="src/js/firebaseauth.js"></script>
     <script type="module" src="src/js/student.js"></script>
+    <script type="module" src="src/js/admin.js"></script>
   </body>
 </html>

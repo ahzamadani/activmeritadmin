@@ -61,8 +61,7 @@
               <span
                 class="d-none d-md-block dropdown-toggle ps-2"
                 id="profile-name"
-                >Ahza Madani</span
-              >
+              ></span>
             </a>
             <!-- End Profile Image Icon -->
 
@@ -70,7 +69,7 @@
               class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile"
             >
               <li class="dropdown-header">
-                <h6 id="dropdown-admin-name">Ahza Madani</h6>
+                <h6 id="dropdown-admin-name"></h6>
                 <span>Admin</span>
               </li>
               <li><hr class="dropdown-divider" /></li>
@@ -283,227 +282,12 @@
                     </div>
                     <!-- Line Chart -->
                     <div id="reportsChart"></div>
-
-                    <script>
-                      document.addEventListener("DOMContentLoaded", () => {
-                        new ApexCharts(
-                          document.querySelector("#reportsChart"),
-                          {
-                            series: [
-                              {
-                                name: "Event",
-                                data: [31, 40, 28, 51, 42, 82, 56],
-                              },
-                              {
-                                name: "Merit",
-                                data: [11, 32, 45, 32, 34, 52, 41],
-                              },
-                              {
-                                name: "Students",
-                                data: [15, 11, 32, 18, 9, 24, 11],
-                              },
-                            ],
-                            chart: {
-                              height: 350,
-                              type: "area",
-                              toolbar: {
-                                show: false,
-                              },
-                            },
-                            markers: {
-                              size: 4,
-                            },
-                            colors: ["#4154f1", "#2eca6a", "#ff771d"],
-                            fill: {
-                              type: "gradient",
-                              gradient: {
-                                shadeIntensity: 1,
-                                opacityFrom: 0.3,
-                                opacityTo: 0.4,
-                                stops: [0, 90, 100],
-                              },
-                            },
-                            dataLabels: {
-                              enabled: false,
-                            },
-                            stroke: {
-                              curve: "smooth",
-                              width: 2,
-                            },
-                            xaxis: {
-                              type: "date",
-                              categories: [
-                                "2018-09-19",
-                                "2018-09-19",
-                                "2018-09-19",
-                                "2018-09-19",
-                                "2018-09-19",
-                                "2018-09-19",
-                                "2018-09-19",
-                              ],
-                            },
-                            tooltip: {
-                              x: {
-                                format: "dd/MM/yy ",
-                              },
-                            },
-                          }
-                        ).render();
-                      });
-                    </script>
+                    <script type="module" src="src/js/indexchart.js"></script>
                     <!-- End Line Chart -->
                   </div>
                 </div>
               </div>
               <!-- End Reports -->
-
-              <!-- Recent Request -->
-              <!-- <div class="col-12">
-                <div class="card recent-sales overflow-auto">
-
-
-                  <div class="card-body">
-                    <h5 class="card-title">
-                      Recent Request <span>| Today</span>
-                    </h5>
-
-                    <table class="table table-borderless datatable">
-                      <thead>
-                        <tr>
-                          <th scope="col">#</th>
-                          <th scope="col">Name</th>
-                          <th scope="col">Event</th>
-                          <th scope="col">Date</th>
-                          <th scope="col">Place</th>
-                          <th scope="col">Merit</th>
-                          <th scope="col">Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <th scope="row"><a href="#">#1</a></th>
-                          <td>Hadi</td>
-                          <td>
-                            <a href="#" class="text-primary"
-                              >Graduasi Pelajar</a
-                            >
-                          </td>
-                          <td>31/12/2024</td>
-                          <td>
-                            <a href="#" class="text-primary"
-                              >FSKTM Lobby</a
-                            >
-                          </td>
-                          <td>
-                            <span></span> 1 </span>
-                          </td>
-                          <td>
-                            <span class="badge bg-success">Approved</span>
-                          </td>
-                        </tr><tr>
-                          <th scope="row"><a href="#">#2</a></th>
-                          <td>Zikri</td>
-                          <td>
-                            <a href="#" class="text-primary"
-                              >Graduasi Pelajar</a
-                            >
-                          </td>
-                          <td>1/1/2024</td>
-                          <td>
-                            <a href="#" class="text-primary"
-                              >FSKTM Lobby</a
-                            >
-                          </td>
-                          <td>
-                            <span></span> 1 </span>
-                          </td>
-                          <td>
-                            <span class="badge bg-success">Approved</span>
-                          </td>
-                        </tr><tr>
-                          <th scope="row"><a href="#">#3</a></th>
-                          <td>Brandon Jacob</td>
-                          <td>
-                            <a href="#" class="text-primary"
-                              >Graduasi Pelajar</a
-                            >
-                          </td>
-                          <td>15/4/2024</td>
-                          <td>
-                            <a href="#" class="text-primary"
-                              >Sakura</a
-                            >
-                          </td>
-                          <td>
-                            <span> 2 </span>
-                          </td>
-                          <td><span class="badge bg-danger">Rejected</span></td>
-                        </tr><tr>
-                          <th scope="row"><a href="#">#4</a></th>
-                          <td>Chealsea Esi</td>
-                          <td>
-                            <a href="#" class="text-primary"
-                              >Graduasi Pelajar</a
-                            >
-                          </td>
-                          <td>15/4/2024</td>
-                          <td>
-                            <a href="#" class="text-primary"
-                              >Bunga Raya</a
-                            >
-                          </td>
-                          <td>
-                            <span></span> 3 </span>
-                          </td>
-                          <td><span class="badge bg-danger">Rejected</span></td>
-                        </tr><tr>
-                          <th scope="row"><a href="#">#5</a></th>
-                          <td>Brandon Jacob</td>
-                          <td>
-                            <a href="#" class="text-primary"
-                              >Graduasi Pelajar</a
-                            >
-                          </td>
-                          <td>11/2/2024</td>
-                          <td>
-                            <a href="#" class="text-primary"
-                              >Allamanda</a
-                            >
-                          </td>
-                          <td>
-                            <span></span> 2 </span>
-                          </td>
-                          <td>
-                            <span class="badge bg-warning">Pending</span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <th scope="row"><a href="#">#6</a></th>
-                          <td>Adam Barie</td>
-                          <td>
-                            <a href="#" class="text-primary"
-                              >Graduasi Pelajar</a
-                            >
-                          </td>
-                          <td>5/2/2024</td>
-                          <td>
-                            <a href="#" class="text-primary"
-                              >Cempaka</a
-                            >
-                          </td>
-                          <td>
-                            <span></span> 5 </span>
-                          </td>
-                          <td>
-                            <span class="badge bg-warning">Pending</span>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div> -->
-              <!-- End Recent Sales -->
             </div>
           </div>
           <!-- End Left side columns -->
@@ -526,159 +310,14 @@
                         <th scope="col">Merit</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <tr>
-                        <th scope="row">
-                          <span>1</span>
-                        </th>
-                        <td>
-                          <a href="#" class="text-primary fw-bold"
-                            >Ikhwan Sauffi</a
-                          >
-                        </td>
-                        <td>78965</td>
-                        <td>Allamanda</td>
-                        <td class="fw-bold">5828</td>
-                      </tr>
-
-                      <tr>
-                        <th scope="row">
-                          <span>2</span>
-                        </th>
-                        <td>
-                          <a href="#" class="text-primary fw-bold">Wan Aiman</a>
-                        </td>
-                        <td>72323</td>
-                        <td>Allamanda</td>
-                        <td class="fw-bold">4898</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">
-                          <span>3</span>
-                        </th>
-                        <td>
-                          <a href="#" class="text-primary fw-bold">Danial Lo</a>
-                        </td>
-                        <td>98746</td>
-                        <td>Bunga Raya</td>
-                        <td class="fw-bold">3303</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">
-                          <span>4</span>
-                        </th>
-                        <td>
-                          <a href="#" class="text-primary fw-bold"
-                            >Iqmal Qisti</a
-                          >
-                        </td>
-                        <td>75656</td>
-                        <td>Allamanda</td>
-                        <td class="fw-bold">2909</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">
-                          <span>5</span>
-                        </th>
-                        <td>
-                          <a href="#" class="text-primary fw-bold"
-                            >Akram Ifwat</a
-                          >
-                        </td>
-                        <td>84565</td>
-                        <td>Cempaka</td>
-                        <td class="fw-bold">2031</td>
-                      </tr>
+                    <tbody id="student-table-body">
+                      <!-- Data will be injected here by studentrank.js -->
                     </tbody>
                   </table>
                 </div>
               </div>
             </div>
             <!-- End Top Student -->
-            <!-- Recent Activity -->
-            <!-- <div class="card">
-
-              <div class="card-body">
-                <h5 class="card-title">Recent Activity <span>| Today</span></h5>
-
-                <div class="activity">
-                  <div class="activity-item d-flex">
-                    <div class="activite-label">32 min</div>
-                    <i
-                      class="bi bi-circle-fill activity-badge text-success align-self-start"
-                    ></i>
-                    <div class="activity-content">
-                      Quia quae rerum
-                      <a href="#" class="fw-bold text-dark"
-                        >explicabo officiis</a
-                      >
-                      beatae
-                    </div>
-                  </div> -->
-            <!-- End activity item-->
-
-            <!-- <div class="activity-item d-flex">
-                    <div class="activite-label">56 min</div>
-                    <i
-                      class="bi bi-circle-fill activity-badge text-danger align-self-start"
-                    ></i>
-                    <div class="activity-content">
-                      Voluptatem blanditiis blanditiis eveniet
-                    </div>
-                  </div>
-                  <!-- End activity item-->
-
-            <!-- <div class="activity-item d-flex">
-                    <div class="activite-label">2 hrs</div>
-                    <i
-                      class="bi bi-circle-fill activity-badge text-primary align-self-start"
-                    ></i>
-                    <div class="activity-content">
-                      Voluptates corrupti molestias voluptatem
-                    </div> -->
-            <!-- </div> -->
-            <!-- End activity item-->
-
-            <!-- <div class="activity-item d-flex">
-                    <div class="activite-label">1 day</div>
-                    <i
-                      class="bi bi-circle-fill activity-badge text-info align-self-start"
-                    ></i>
-                    <div class="activity-content">
-                      Tempore autem saepe
-                      <a href="#" class="fw-bold text-dark"
-                        >occaecati voluptatem</a
-                      >
-                      tempore
-                    </div>
-                  </div> -->
-            <!-- End activity item-->
-
-            <!-- <div class="activity-item d-flex">
-                    <div class="activite-label">2 days</div>
-                    <i
-                      class="bi bi-circle-fill activity-badge text-warning align-self-start"
-                    ></i>
-                    <div class="activity-content">
-                      Est sit eum reiciendis exercitationem
-                    </div>
-                  </div> -->
-            <!-- End activity item-->
-
-            <!-- <div class="activity-item d-flex">
-                    <div class="activite-label">4 weeks</div>
-                    <i
-                      class="bi bi-circle-fill activity-badge text-muted align-self-start"
-                    ></i>
-                    <div class="activity-content">
-                      Dicta dolorem harum nulla eius. Ut quidem quidem sit quas
-                    </div>
-                  </div> -->
-            <!-- End activity item-->
-            <!-- </div>
-              </div>
-            </div> -->
-            <!-- End Recent Activity -->
 
             <!-- College Traffic -->
             <div class="card">
@@ -691,68 +330,10 @@
                   class="echart"
                 ></div>
 
-                <script>
-                  document.addEventListener("DOMContentLoaded", () => {
-                    echarts
-                      .init(document.querySelector("#trafficChart"))
-                      .setOption({
-                        tooltip: {
-                          trigger: "item",
-                        },
-                        legend: {
-                          top: "5%",
-                          left: "center",
-                        },
-                        series: [
-                          {
-                            name: "Access From",
-                            type: "pie",
-                            radius: ["40%", "70%"],
-                            avoidLabelOverlap: false,
-                            label: {
-                              show: false,
-                              position: "center",
-                            },
-                            emphasis: {
-                              label: {
-                                show: true,
-                                fontSize: "18",
-                                fontWeight: "bold",
-                              },
-                            },
-                            labelLine: {
-                              show: false,
-                            },
-                            data: [
-                              {
-                                value: 1048,
-                                name: "Cempaka",
-                              },
-                              {
-                                value: 735,
-                                name: "Allamanda",
-                              },
-                              {
-                                value: 580,
-                                name: "Bunga Raya",
-                              },
-                              {
-                                value: 484,
-                                name: "Tunku Abdul Razak",
-                              },
-                              {
-                                value: 300,
-                                name: "Sakura",
-                              },
-                            ],
-                          },
-                        ],
-                      });
-                  });
-                </script>
+                <script type="module" src="src/js/trafficchart.js"></script>
               </div>
             </div>
-            <!-- End Website Traffic -->
+            <!-- End College Traffic -->
           </div>
           <!-- End Right side columns -->
         </div>
@@ -789,6 +370,7 @@
     <!-- Template Main JS File -->
     <script src="src/js/main.js"></script>
     <script type="module" src="src/js/index.js"></script>
-    c
+    <script type="module" src="src/js/admin.js"></script>
+    <script type="module" src="src/js/studentrank.js"></script>
   </body>
 </html>

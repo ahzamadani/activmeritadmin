@@ -16,6 +16,7 @@ import {
   getDocs,
   query,
   where,
+  orderBy,
 } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-firestore.js";
 
 // Your web app's Firebase configuration
@@ -51,6 +52,7 @@ export {
   updateDoc,
   query,
   where,
+  orderBy,
 };
 
 // Function to handle login
