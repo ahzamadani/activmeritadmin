@@ -9,53 +9,52 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     const usersSnapshot = await getDocs(collection(db, "users"));
 
-    for (const userDoc of usersSnapshot.docs) {
+    const activityLogSnapshot = await getDocs(collection(db, "activitylog"));
+
+    const activityLogs = activityLogSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      data: doc.data(),
+    }));
+
+    const userDocs = usersSnapshot.docs;
+
+    // Create an array of promises for fetching scanned users and event data
+    const promises = userDocs.map(async (userDoc) => {
       const userData = userDoc.data();
       const matricNumber = userDoc.id;
       let totalMerit = 0;
 
-      try {
-        // Fetch the activity logs
-        const activityLogSnapshot = await getDocs(
-          collection(db, "activitylog")
+      for (const activityLog of activityLogs) {
+        const activityData = activityLog.data;
+        const activityId = activityLog.id;
+
+        const scannedUserSnapshot = await getDocs(
+          collection(db, `activitylog/${activityId}/scannedUser`)
         );
 
-        for (const activityDoc of activityLogSnapshot.docs) {
-          const activityData = activityDoc.data();
-          const activityId = activityDoc.id;
+        for (const scannedUserDoc of scannedUserSnapshot.docs) {
+          if (scannedUserDoc.id === matricNumber && activityData.eventId) {
+            const eventDocRef = activityData.eventId; // This is a DocumentReference
+            const eventDoc = await getDoc(eventDocRef);
 
-          // Check if the user scanned this activity
-          const scannedUserSnapshot = await getDocs(
-            collection(db, `activitylog/${activityId}/scannedUser`)
-          );
-
-          scannedUserSnapshot.forEach(async (scannedUserDoc) => {
-            if (scannedUserDoc.id === matricNumber && activityData.eventId) {
-              const eventDocRef = activityData.eventId; // This is a DocumentReference
-              const eventDoc = await getDoc(eventDocRef);
-
-              if (eventDoc.exists()) {
-                const eventData = eventDoc.data();
-                totalMerit += parseInt(eventData.merit, 10) || 0; // Ensure merit is treated as an integer
-              }
+            if (eventDoc.exists()) {
+              const eventData = eventDoc.data();
+              totalMerit += parseInt(eventData.merit, 10) || 0; // Ensure merit is treated as an integer
             }
-          });
+          }
         }
-      } catch (error) {
-        console.error(
-          `Error fetching activity logs for user ${matricNumber}:`,
-          error
-        );
       }
 
-      const student = {
+      return {
         name: userData.name || "N/A",
         college: userData.college || "N/A",
         matricNumber,
         totalMerit,
       };
-      students.push(student);
-    }
+    });
+
+    // Wait for all promises to resolve
+    students = await Promise.all(promises);
 
     // Sort students by totalMerit in descending order and get the top 5
     students.sort((a, b) => b.totalMerit - a.totalMerit);
