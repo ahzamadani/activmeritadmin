@@ -310,69 +310,8 @@
                         <th scope="col">Merit</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <tr>
-                        <th scope="row">
-                          <span>1</span>
-                        </th>
-                        <td>
-                          <a href="#" class="text-primary fw-bold"
-                            >Ikhwan Sauffi</a
-                          >
-                        </td>
-                        <td>78965</td>
-                        <td>Allamanda</td>
-                        <td class="fw-bold">5828</td>
-                      </tr>
-
-                      <tr>
-                        <th scope="row">
-                          <span>2</span>
-                        </th>
-                        <td>
-                          <a href="#" class="text-primary fw-bold">Wan Aiman</a>
-                        </td>
-                        <td>72323</td>
-                        <td>Allamanda</td>
-                        <td class="fw-bold">4898</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">
-                          <span>3</span>
-                        </th>
-                        <td>
-                          <a href="#" class="text-primary fw-bold">Danial Lo</a>
-                        </td>
-                        <td>98746</td>
-                        <td>Bunga Raya</td>
-                        <td class="fw-bold">3303</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">
-                          <span>4</span>
-                        </th>
-                        <td>
-                          <a href="#" class="text-primary fw-bold"
-                            >Iqmal Qisti</a
-                          >
-                        </td>
-                        <td>75656</td>
-                        <td>Allamanda</td>
-                        <td class="fw-bold">2909</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">
-                          <span>5</span>
-                        </th>
-                        <td>
-                          <a href="#" class="text-primary fw-bold"
-                            >Akram Ifwat</a
-                          >
-                        </td>
-                        <td>84565</td>
-                        <td>Cempaka</td>
-                        <td class="fw-bold">2031</td>
-                      </tr>
+                    <tbody id="student-table-body">
+                      <!-- Data will be injected here by studentrank.js -->
                     </tbody>
                   </table>
                 </div>
@@ -391,68 +330,10 @@
                   class="echart"
                 ></div>
 
-                <script>
-                  document.addEventListener("DOMContentLoaded", () => {
-                    echarts
-                      .init(document.querySelector("#trafficChart"))
-                      .setOption({
-                        tooltip: {
-                          trigger: "item",
-                        },
-                        legend: {
-                          top: "5%",
-                          left: "center",
-                        },
-                        series: [
-                          {
-                            name: "Access From",
-                            type: "pie",
-                            radius: ["40%", "70%"],
-                            avoidLabelOverlap: false,
-                            label: {
-                              show: false,
-                              position: "center",
-                            },
-                            emphasis: {
-                              label: {
-                                show: true,
-                                fontSize: "18",
-                                fontWeight: "bold",
-                              },
-                            },
-                            labelLine: {
-                              show: false,
-                            },
-                            data: [
-                              {
-                                value: 1048,
-                                name: "Cempaka",
-                              },
-                              {
-                                value: 735,
-                                name: "Allamanda",
-                              },
-                              {
-                                value: 580,
-                                name: "Bunga Raya",
-                              },
-                              {
-                                value: 484,
-                                name: "Tunku Abdul Razak",
-                              },
-                              {
-                                value: 300,
-                                name: "Sakura",
-                              },
-                            ],
-                          },
-                        ],
-                      });
-                  });
-                </script>
+                <script type="module" src="src/js/trafficchart.js"></script>
               </div>
             </div>
-            <!-- End Website Traffic -->
+            <!-- End College Traffic -->
           </div>
           <!-- End Right side columns -->
         </div>
@@ -490,6 +371,6 @@
     <script src="src/js/main.js"></script>
     <script type="module" src="src/js/index.js"></script>
     <script type="module" src="src/js/admin.js"></script>
-    <!-- <script type="module" src="src/js/indexchart.js"></script> -->
+    <script type="module" src="src/js/studentrank.js"></script>
   </body>
 </html>
