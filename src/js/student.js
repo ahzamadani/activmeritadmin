@@ -5,6 +5,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const compareBtn = document.getElementById("compare-btn");
   const searchStudent1 = document.getElementById("search-student1");
   const searchStudent2 = document.getElementById("search-student2");
+  const clearSearch1 = document.getElementById("clear-search1");
+  const clearSearch2 = document.getElementById("clear-search2");
   const student1Details = document.getElementById("student1-details");
   const student2Details = document.getElementById("student2-details");
   const compareModal = new bootstrap.Modal(
@@ -16,6 +18,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   const studentDetailsContainer = document.getElementById("student-details");
 
   let students = [];
+  const studentDataCache = {};
+  let student1Chart = null;
+  let student2Chart = null;
 
   try {
     const usersSnapshot = await getDocs(collection(db, "users"));
@@ -27,32 +32,38 @@ document.addEventListener("DOMContentLoaded", async () => {
       let totalMerit = 0;
 
       try {
-        // Fetch the activity logs
-        const activityLogSnapshot = await getDocs(
-          collection(db, "activitylog")
-        );
-        for (const activityDoc of activityLogSnapshot.docs) {
-          const activityData = activityDoc.data();
-          const activityId = activityDoc.id;
-
-          // Check if the user scanned this activity
-          const scannedUserDocRef = doc(
-            db,
-            `activitylog/${activityId}/scannedUser`,
-            matricNumber
+        if (studentDataCache[matricNumber]) {
+          totalMerit = studentDataCache[matricNumber].totalMerit;
+        } else {
+          const activityLogSnapshot = await getDocs(
+            collection(db, "activitylog")
           );
-          const scannedUserDoc = await getDoc(scannedUserDocRef);
 
-          if (scannedUserDoc.exists() && activityData.eventId) {
-            // Fetch the event document to get the merit value using the eventId field
-            const eventDocRef = activityData.eventId; // This is a DocumentReference
-            const eventDoc = await getDoc(eventDocRef);
+          for (const activityDoc of activityLogSnapshot.docs) {
+            const activityData = activityDoc.data();
+            const activityId = activityDoc.id;
 
-            if (eventDoc.exists()) {
-              const eventData = eventDoc.data();
-              totalMerit += parseInt(eventData.merit, 10) || 0; // Ensure merit is treated as an integer
+            const scannedUserDocRef = doc(
+              db,
+              `activitylog/${activityId}/scannedUser`,
+              matricNumber
+            );
+            const scannedUserDoc = await getDoc(scannedUserDocRef);
+
+            if (scannedUserDoc.exists() && activityData.eventId) {
+              const eventDocRef = activityData.eventId;
+              const eventDoc = await getDoc(eventDocRef);
+
+              if (eventDoc.exists()) {
+                const eventData = eventDoc.data();
+                totalMerit += parseInt(eventData.merit, 10) || 0;
+              }
             }
           }
+
+          studentDataCache[matricNumber] = {
+            totalMerit,
+          };
         }
       } catch (error) {
         console.error(
@@ -86,10 +97,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       studentTableBody.appendChild(row);
     }
 
-    // Initialize the data table
     new simpleDatatables.DataTable(".datatable");
 
-    const searchStudent = async (input, detailsContainer) => {
+    const searchStudent = async (
+      input,
+      detailsContainer,
+      chartContainer,
+      chartInstance
+    ) => {
       input.addEventListener("input", async () => {
         const searchTerm = input.value.toLowerCase();
         const matchedStudent = students.find(
@@ -99,25 +114,69 @@ document.addEventListener("DOMContentLoaded", async () => {
         );
 
         if (matchedStudent) {
+          const userDoc = await getDoc(
+            doc(db, "users", matchedStudent.matricNumber)
+          );
+          const userData = userDoc.data();
+
           detailsContainer.innerHTML = `
-            <div class="card">
+            <div class="card" style="flex: 1;">
               <div class="card-body">
                 <h5 class="card-title">${matchedStudent.name}</h5>
                 <p>College: ${matchedStudent.college}</p>
                 <p>Gender: ${matchedStudent.gender}</p>
+                <p>Age: ${userData.age || "N/A"}</p>
+                <p>Email: ${userData.email || "N/A"}</p>
+                <p>Phone: ${userData.phone || "N/A"}</p>
                 <p>Matric: ${matchedStudent.matricNumber}</p>
-                <p>Merit: ${matchedStudent.totalMerit}</p>
+              </div>
+            </div>
+            <div class="card" style="flex: 1;">
+              <div class="card-body">
+                <h5 class="card-title">Merit</h5>
+                <p style="font-size: 2rem; color: green; text-align: center;">${
+                  matchedStudent.totalMerit
+                }</p>
               </div>
             </div>
           `;
+
+          chartInstance = await renderMeritChart(
+            matchedStudent.matricNumber,
+            chartContainer,
+            chartInstance
+          );
         } else {
           detailsContainer.innerHTML = `<p>No student found</p>`;
+          if (chartInstance) chartInstance.destroy();
         }
       });
     };
 
-    searchStudent(searchStudent1, student1Details);
-    searchStudent(searchStudent2, student2Details);
+    searchStudent(
+      searchStudent1,
+      student1Details,
+      "student1MeritChart",
+      student1Chart
+    );
+    searchStudent(
+      searchStudent2,
+      student2Details,
+      "student2MeritChart",
+      student2Chart
+    );
+
+    clearSearch1.addEventListener("click", () => {
+      searchStudent1.value = "";
+      student1Details.innerHTML = "";
+      if (student1Chart) student1Chart.destroy();
+    });
+
+    clearSearch2.addEventListener("click", () => {
+      searchStudent2.value = "";
+      student2Details.innerHTML = "";
+      if (student2Chart) student2Chart.destroy();
+    });
 
     compareBtn.addEventListener("click", () => {
       compareModal.show();
@@ -131,22 +190,56 @@ document.addEventListener("DOMContentLoaded", async () => {
         );
 
         if (matchedStudent) {
-          studentDetailsContainer.innerHTML = `
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">${matchedStudent.name}</h5>
-                <p>College: ${matchedStudent.college}</p>
-                <p>Gender: ${matchedStudent.gender}</p>
-                <p>Matric: ${matchedStudent.matricNumber}</p>
-                <p>Merit: ${matchedStudent.totalMerit}</p>
-              </div>
-            </div>
-          `;
+          const userDoc = await getDoc(doc(db, "users", matricNumber));
+          const userData = userDoc.data();
 
+          const studentName = document.getElementById("studentName");
+          const studentCollege = document.getElementById("studentCollege");
+          const studentGender = document.getElementById("studentGender");
+          const studentAge = document.getElementById("studentAge");
+          const studentEmail = document.getElementById("studentEmail");
+          const studentPhone = document.getElementById("studentPhone");
+          const studentMatric = document.getElementById("studentMatric");
+          const studentMerit = document.getElementById("studentMerit");
+
+          if (studentName) studentName.textContent = userData.name || "N/A";
+          if (studentCollege)
+            studentCollege.textContent = `College: ${
+              userData.college || "N/A"
+            }`;
+          if (studentGender)
+            studentGender.textContent = `Gender: ${userData.gender || "N/A"}`;
+          if (studentAge)
+            studentAge.textContent = `Age: ${userData.age || "N/A"}`;
+          if (studentEmail)
+            studentEmail.textContent = `Email: ${userData.email || "N/A"}`;
+          if (studentPhone)
+            studentPhone.textContent = `Phone: ${userData.phone || "N/A"}`;
+          if (studentMatric)
+            studentMatric.textContent = `Matric: ${matchedStudent.matricNumber}`;
+          if (studentMerit)
+            studentMerit.textContent = matchedStudent.totalMerit;
+
+          student1Chart = await renderMeritChart(
+            matchedStudent.matricNumber,
+            "studentMeritChart",
+            student1Chart
+          );
           studentDetailsModal.show();
         }
       });
     });
+
+    document
+      .getElementById("compareModal")
+      .addEventListener("hidden.bs.modal", () => {
+        searchStudent1.value = "";
+        searchStudent2.value = "";
+        student1Details.innerHTML = "";
+        student2Details.innerHTML = "";
+        if (student1Chart) student1Chart.destroy();
+        if (student2Chart) student2Chart.destroy();
+      });
   } catch (error) {
     console.error("Error fetching users:", error);
     const row = document.createElement("tr");
@@ -154,3 +247,104 @@ document.addEventListener("DOMContentLoaded", async () => {
     studentTableBody.appendChild(row);
   }
 });
+
+async function renderMeritChart(matricNumber, chartContainerId, chartInstance) {
+  let meritData = {};
+
+  try {
+    const activityLogSnapshot = await getDocs(collection(db, "activitylog"));
+    for (const activityDoc of activityLogSnapshot.docs) {
+      const activityData = activityDoc.data();
+      const activityId = activityDoc.id;
+
+      const scannedUserDocRef = doc(
+        db,
+        `activitylog/${activityId}/scannedUser`,
+        matricNumber
+      );
+      const scannedUserDoc = await getDoc(scannedUserDocRef);
+
+      if (scannedUserDoc.exists() && activityData.eventId) {
+        const eventDocRef = activityData.eventId;
+        const eventDoc = await getDoc(eventDocRef);
+
+        if (eventDoc.exists()) {
+          const eventData = eventDoc.data();
+          const eventDate = eventData.date.toDate
+            ? eventData.date.toDate()
+            : new Date(eventData.date);
+          const month = eventDate.toISOString().slice(0, 7);
+
+          if (!meritData[month]) {
+            meritData[month] = 0;
+          }
+          meritData[month] += parseInt(eventData.merit, 10) || 0;
+        }
+      }
+    }
+  } catch (error) {
+    console.error(`Error fetching merit data for user ${matricNumber}:`, error);
+  }
+
+  const sortedMeritData = Object.keys(meritData)
+    .sort()
+    .map((month) => {
+      return {
+        x: new Date(month).getTime(),
+        y: meritData[month],
+      };
+    });
+
+  const options = {
+    series: [
+      {
+        name: "Merit",
+        data: sortedMeritData,
+      },
+    ],
+    chart: {
+      height: 350,
+      type: "line",
+      toolbar: {
+        show: false,
+      },
+    },
+    stroke: {
+      curve: "smooth",
+      width: 2,
+      colors: ["#2eca6a"],
+    },
+    markers: {
+      size: 5,
+      colors: ["#2eca6a"],
+    },
+    xaxis: {
+      type: "datetime",
+      labels: {
+        format: "MMM 'yy",
+      },
+    },
+    yaxis: {
+      min: 0,
+      forceNiceScale: true,
+    },
+    tooltip: {
+      x: {
+        format: "MMM 'yy",
+      },
+      marker: {
+        show: true,
+        fillColors: ["#2eca6a"],
+      },
+    },
+  };
+
+  if (chartInstance) chartInstance.destroy();
+  const chart = new ApexCharts(
+    document.querySelector(`#${chartContainerId}`),
+    options
+  );
+  chart.render();
+
+  return chart;
+}
