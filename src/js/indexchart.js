@@ -9,17 +9,19 @@ async function fetchEventData() {
 
     const eventData = querySnapshot.docs.map((doc) => doc.data());
     console.log("Fetched event data:", eventData); // Debugging log
-    const eventCountByMonth = processEventData(eventData);
-    return eventCountByMonth;
+    const { eventCountByMonth, meritCountByMonth } =
+      processEventData(eventData);
+    return { eventCountByMonth, meritCountByMonth };
   } catch (error) {
     console.error("Error fetching event data: ", error);
-    return [];
+    return { eventCountByMonth: [], meritCountByMonth: [] };
   }
 }
 
-// Process data to count events by month
+// Process data to count events and merits by month
 function processEventData(data) {
-  const counts = {};
+  const eventCounts = {};
+  const meritCounts = {};
   let minDate = new Date();
   let maxDate = new Date(0);
 
@@ -29,10 +31,16 @@ function processEventData(data) {
       ? event.date.toDate()
       : new Date(event.date);
     const month = eventDate.toISOString().slice(0, 7); // Extract 'YYYY-MM' format
-    if (!counts[month]) {
-      counts[month] = 0;
+    if (!eventCounts[month]) {
+      eventCounts[month] = 0;
+      meritCounts[month] = 0;
     }
-    counts[month]++;
+    eventCounts[month]++;
+    meritCounts[month] += event.merit ? parseFloat(event.merit) : 0; // Ensure merit is a number
+
+    console.log(
+      `Processing event: date=${eventDate}, month=${month}, merit=${event.merit}`
+    ); // Debugging log
 
     // Determine min and max dates
     if (eventDate < minDate) minDate = eventDate;
@@ -51,25 +59,37 @@ function processEventData(data) {
     const month = currentDate.toISOString().slice(0, 7);
     allMonths.push({
       x: new Date(month).getTime(),
-      y: counts[month] || 0,
+      y: eventCounts[month] || 0,
+      merit: meritCounts[month] || 0,
     });
     currentDate.setMonth(currentDate.getMonth() + 1);
   }
 
-  return allMonths;
+  const eventCountByMonth = allMonths.map(({ x, y }) => ({ x, y }));
+  const meritCountByMonth = allMonths.map(({ x, merit }) => ({ x, y: merit }));
+
+  console.log("Event counts by month:", eventCountByMonth); // Debugging log
+  console.log("Merit counts by month:", meritCountByMonth); // Debugging log
+
+  return { eventCountByMonth, meritCountByMonth };
 }
 
 // Render the chart with the fetched data
 async function renderChart() {
-  const eventData = await fetchEventData();
+  const { eventCountByMonth, meritCountByMonth } = await fetchEventData();
 
-  console.log("Processed event data for chart:", eventData); // Debugging log
+  console.log("Processed event data for chart:", eventCountByMonth); // Debugging log
+  console.log("Processed merit data for chart:", meritCountByMonth); // Debugging log
 
   const options = {
     series: [
       {
         name: "Event",
-        data: eventData,
+        data: eventCountByMonth,
+      },
+      {
+        name: "Merit",
+        data: meritCountByMonth,
       },
     ],
     chart: {
@@ -81,11 +101,14 @@ async function renderChart() {
           zoom: false, // Explicitly disable zooming functionality
         },
       },
+      zoom: {
+        enabled: false, // Disable zooming functionality
+      },
     },
     markers: {
       size: 4,
     },
-    colors: ["#4154f1"],
+    colors: ["#4154f1", "#2eca6a"], // Different color for the merit series
     fill: {
       type: "gradient",
       gradient: {
