@@ -8,6 +8,7 @@ async function fetchEventData() {
     const querySnapshot = await getDocs(q);
 
     const eventData = querySnapshot.docs.map((doc) => doc.data());
+    console.log("Fetched event data:", eventData); // Debugging log
     const eventCountByMonth = processEventData(eventData);
     return eventCountByMonth;
   } catch (error) {
@@ -19,24 +20,50 @@ async function fetchEventData() {
 // Process data to count events by month
 function processEventData(data) {
   const counts = {};
+  let minDate = new Date();
+  let maxDate = new Date(0);
+
+  // Collect counts and determine the date range
   data.forEach((event) => {
-    const month = event.date.toDate().toISOString().slice(0, 7); // Extract 'YYYY-MM' format
+    const eventDate = event.date.toDate
+      ? event.date.toDate()
+      : new Date(event.date);
+    const month = eventDate.toISOString().slice(0, 7); // Extract 'YYYY-MM' format
     if (!counts[month]) {
       counts[month] = 0;
     }
     counts[month]++;
+
+    // Determine min and max dates
+    if (eventDate < minDate) minDate = eventDate;
+    if (eventDate > maxDate) maxDate = eventDate;
   });
 
-  const sortedMonths = Object.keys(counts).sort();
-  return sortedMonths.map((month) => ({
-    x: new Date(month).getTime(),
-    y: counts[month],
-  }));
+  // Adjust maxDate to include the last month fully
+  maxDate = new Date(maxDate.getFullYear(), maxDate.getMonth() + 1, 1);
+
+  // Generate all months within the date range
+  const allMonths = [];
+  let currentDate = new Date(minDate.getFullYear(), minDate.getMonth(), 1);
+  const endDate = new Date(maxDate.getFullYear(), maxDate.getMonth() + 1, 1);
+
+  while (currentDate < endDate) {
+    const month = currentDate.toISOString().slice(0, 7);
+    allMonths.push({
+      x: new Date(month).getTime(),
+      y: counts[month] || 0,
+    });
+    currentDate.setMonth(currentDate.getMonth() + 1);
+  }
+
+  return allMonths;
 }
 
 // Render the chart with the fetched data
 async function renderChart() {
   const eventData = await fetchEventData();
+
+  console.log("Processed event data for chart:", eventData); // Debugging log
 
   const options = {
     series: [
@@ -44,26 +71,21 @@ async function renderChart() {
         name: "Event",
         data: eventData,
       },
-      {
-        name: "Merit",
-        data: [11, 32, 45, 32, 34, 52, 41], // Sample data for illustration
-      },
-      {
-        name: "Students",
-        data: [15, 11, 32, 18, 9, 24, 11], // Sample data for illustration
-      },
     ],
     chart: {
       height: 350,
       type: "area",
       toolbar: {
-        show: false,
+        show: false, // Disables the entire toolbar, including zoom
+        tools: {
+          zoom: false, // Explicitly disable zooming functionality
+        },
       },
     },
     markers: {
       size: 4,
     },
-    colors: ["#4154f1", "#2eca6a", "#ff771d"],
+    colors: ["#4154f1"],
     fill: {
       type: "gradient",
       gradient: {
@@ -82,11 +104,24 @@ async function renderChart() {
     },
     xaxis: {
       type: "datetime",
-      categories: eventData.map((d) => d.x),
+      labels: {
+        format: "MMM 'yy",
+        show: true,
+      },
+      tickAmount: 13, // Ensures all months are shown including December
+    },
+    yaxis: {
+      min: 0,
+      forceNiceScale: true,
+      labels: {
+        formatter: function (val) {
+          return Math.floor(val); // Ensure the count is an integer
+        },
+      },
     },
     tooltip: {
       x: {
-        format: "MMM yyyy",
+        format: "MMM 'yy",
       },
     },
   };
