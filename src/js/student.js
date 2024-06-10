@@ -149,12 +149,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       searchStudent1.value = "";
       student1Details.innerHTML = "";
       if (student1Chart) student1Chart.destroy();
+      student1Chart = null;
     });
 
     clearSearch2.addEventListener("click", () => {
       searchStudent2.value = "";
       student2Details.innerHTML = "";
       if (student2Chart) student2Chart.destroy();
+      student2Chart = null;
     });
 
     compareBtn.addEventListener("click", () => {
@@ -217,7 +219,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         student1Details.innerHTML = "";
         student2Details.innerHTML = "";
         if (student1Chart) student1Chart.destroy();
+        student1Chart = null;
         if (student2Chart) student2Chart.destroy();
+        student2Chart = null;
       });
   } catch (error) {
     console.error("Error fetching users:", error);
