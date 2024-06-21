@@ -123,7 +123,7 @@ export function signup(name, email, phone, admincollege, username, password) {
 
       setTimeout(() => {
         window.location.href = "login.html";
-      }, 3000); // Redirect after 3 seconds
+      }, 1000); // Redirect after 3 seconds
     })
     .catch((error) => {
       console.error("Error signing up: ", error);
@@ -165,6 +165,7 @@ if (signOutButton) {
   signOutButton.addEventListener("click", async () => {
     try {
       await signOut(auth);
+      alert("Signed out successfully");
       window.location.href = "login.html";
     } catch (error) {
       console.error("Error signing out: ", error);
