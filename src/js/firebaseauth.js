@@ -75,8 +75,21 @@ export async function login(username, password) {
     console.log("Login successful");
     window.location.href = "index.html";
   } catch (error) {
-    console.error("Error signing in: ", error);
-    alert("Login failed: " + error.message);
+    if (
+      error.code === "auth/wrong-password" ||
+      error.code === "auth/invalid-credential"
+    ) {
+      alert("Wrong password");
+    } else if (error.code === "auth/invalid-email") {
+      alert("Invalid email");
+    } else if (error.code === "auth/user-disabled") {
+      alert("User disabled");
+    } else if (error.code === "auth/user-not-found") {
+      alert("Username does not exist");
+    } else {
+      console.error("Error signing in: ", error);
+      alert("Login failed: " + error.message);
+    }
   }
 }
 
