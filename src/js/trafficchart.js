@@ -1,5 +1,5 @@
 // trafficchart.js
-import { db, getDocs, collection } from "./firebaseauth.js"; // Adjust the import path if needed
+import { db, getDocs, collection } from "./firebaseauth.js";
 
 // Function to fetch college data from Firestore
 async function fetchCollegeData() {

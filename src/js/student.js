@@ -328,11 +328,11 @@ async function renderMeritChart(matricNumber, chartContainerId, chartInstance) {
       toolbar: {
         show: false,
         tools: {
-          zoom: false, // Explicitly disable zooming functionality
+          zoom: false,
         },
       },
       zoom: {
-        enabled: false, // Disable zooming functionality
+        enabled: false,
       },
     },
     stroke: {
